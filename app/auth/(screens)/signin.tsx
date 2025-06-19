@@ -1,48 +1,51 @@
+import PrimaryButton from '@/components/PrimaryButton';
+import PrimaryInput from '@/components/PrimaryInput';
 import { Ionicons } from '@expo/vector-icons';
-import { Link, router } from 'expo-router';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Link } from 'expo-router';
 import React, { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import * as yup from 'yup';
 
 export default function SignIn() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSignIn = async () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
-      return;
-    }
+  const schema = yup.object().shape({
+    email: yup.string().email('Invalid email').required('Email is required'),
+    password: yup.string().required('Password is required'),
+  });
 
+  const { control, handleSubmit, formState: { errors } } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+
+  const onSubmit = async (data: any) => {
     setIsLoading(true);
-    // Simple mock authentication
+    // Simulate async sign in
     setTimeout(() => {
       setIsLoading(false);
-      router.replace('/(tabs)');
-    }, 1500);
+      Alert.alert('Success', 'Signed in!');
+    }, 1000);
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-white"
+    <KeyboardAwareScrollView
+    className='flex-1 bg-white'
+    showsVerticalScrollIndicator={false}
     >
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        showsVerticalScrollIndicator={false}
-      >
         <View className="flex-1 px-8 pt-20 pb-8">
-          {/* Header */}
           <View className="items-center mb-16">
             <View className="w-16 h-16 bg-purple-600 rounded-2xl items-center justify-center mb-6">
               <Ionicons name="journal" size={32} color="white" />
@@ -55,40 +58,52 @@ export default function SignIn() {
             </Text>
           </View>
 
-          {/* Form */}
           <View className="space-y-6">
-            {/* Email Input */}
             <View>
               <Text className="text-gray-700 font-medium mb-2">
                 Email
               </Text>
-              <TextInput
-                value={email}
-                onChangeText={setEmail}
-                placeholder="Enter your email"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-gray-900"
-                placeholderTextColor="#9CA3AF"
+              <Controller
+                control={control}
+                name="email"
+                render={({ field: { onChange, value } }) => (
+                  <PrimaryInput
+                    value={value}
+                    onChangeText={onChange}
+                    placeholder="Enter your email"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-gray-900"
+                    placeholderTextColor="#9CA3AF"
+                  />
+                )}
               />
+              {errors.email && (
+                <Text className="text-red-500 text-xs mt-1">{errors.email.message}</Text>
+              )}
             </View>
 
-            {/* Password Input */}
             <View>
               <Text className="text-gray-700 font-medium mb-2">
                 Password
               </Text>
               <View className="relative">
-                <TextInput
-                  value={password}
-                  onChangeText={setPassword}
-                  placeholder="Enter your password"
-                  secureTextEntry={!showPassword}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-gray-900 pr-12"
-                  placeholderTextColor="#9CA3AF"
+                <Controller
+                  control={control}
+                  name="password"
+                  render={({ field: { onChange, value } }) => (
+                    <PrimaryInput
+                      value={value}
+                      onChangeText={onChange}
+                      placeholder="Enter your password"
+                      secureTextEntry={!showPassword}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-gray-900 pr-12"
+                      placeholderTextColor="#9CA3AF"
+                    />
+                  )}
                 />
                 <TouchableOpacity
                   onPress={() => setShowPassword(!showPassword)}
@@ -101,40 +116,24 @@ export default function SignIn() {
                   />
                 </TouchableOpacity>
               </View>
+              {errors.password && (
+                <Text className="text-red-500 text-xs mt-1">{errors.password.message}</Text>
+              )}
             </View>
 
-            {/* Forgot Password */}
             <TouchableOpacity className="items-end">
               <Text className="text-purple-600 font-medium">
                 Forgot password?
               </Text>
             </TouchableOpacity>
-
-            {/* Sign In Button */}
-            <TouchableOpacity
-              onPress={handleSignIn}
+            <PrimaryButton
+              onPress={handleSubmit(onSubmit)}
               disabled={isLoading}
-              className={`bg-purple-600 rounded-xl py-4 items-center mt-6 ${
-                isLoading ? 'opacity-70' : ''
-              }`}
-            >
-              {isLoading ? (
-                <View className="flex-row items-center">
-                  <View className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                  <Text className="text-white font-semibold">
-                    Signing in...
-                  </Text>
-                </View>
-              ) : (
-                <Text className="text-white font-semibold text-lg">
-                  Sign In
-                </Text>
-              )}
-            </TouchableOpacity>
-
-            {/* Sign Up Link */}
+              className="mt-6"
+              title={isLoading ? 'Signing in…' : 'Sign In'}
+            />
             <View className="flex-row justify-center mt-8">
-              <Text className="text-gray-500">Don't have an account? </Text>
+              <Text className="text-gray-500">Don&apos;t have an account? </Text>
               <Link href="/auth/signup" asChild>
                 <TouchableOpacity>
                   <Text className="text-purple-600 font-semibold">
@@ -145,7 +144,6 @@ export default function SignIn() {
             </View>
           </View>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
 } 

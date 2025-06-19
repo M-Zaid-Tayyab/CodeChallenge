@@ -1,61 +1,59 @@
+import PrimaryButton from '@/components/PrimaryButton';
+import PrimaryInput from '@/components/PrimaryInput';
 import { Ionicons } from '@expo/vector-icons';
-import { Link, router } from 'expo-router';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Link } from 'expo-router';
 import React, { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import * as yup from 'yup';
 
 export default function SignUp() {
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSignUp = async () => {
-    if (!fullName || !email || !password || !confirmPassword) {
-      Alert.alert('Error', 'Please fill in all fields');
-      return;
-    }
+  const schema = yup.object().shape({
+    fullName: yup.string().required('Full name is required'),
+    email: yup.string().email('Invalid email').required('Email is required'),
+    password: yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
+    confirmPassword: yup
+      .string()
+      .oneOf([yup.ref('password')], 'Passwords do not match')
+      .required('Confirm password is required'),
+  });
 
-    if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
-      return;
-    }
+  const { control, handleSubmit, formState: { errors } } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      fullName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+  });
 
-    if (password.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters long');
-      return;
-    }
-
+  const onSubmit = async (data: any) => {
     setIsLoading(true);
-    // Simple mock registration
+    // Simulate async sign up
     setTimeout(() => {
       setIsLoading(false);
-      router.replace('/(tabs)');
-    }, 1500);
+      Alert.alert('Success', 'Account created!');
+    }, 1000);
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-white"
+    <KeyboardAwareScrollView
+    className='flex-1 bg-white'
+    showsVerticalScrollIndicator={false}
     >
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        showsVerticalScrollIndicator={false}
-      >
         <View className="flex-1 px-8 pt-16 pb-8">
-          {/* Header */}
           <View className="items-center mb-12">
             <View className="w-16 h-16 bg-purple-600 rounded-2xl items-center justify-center mb-6">
               <Ionicons name="journal" size={32} color="white" />
@@ -68,56 +66,76 @@ export default function SignUp() {
             </Text>
           </View>
 
-          {/* Form */}
           <View className="space-y-5">
-            {/* Full Name Input */}
             <View>
               <Text className="text-gray-700 font-medium mb-2">
                 Full Name
               </Text>
-              <TextInput
-                value={fullName}
-                onChangeText={setFullName}
-                placeholder="Enter your full name"
-                autoCapitalize="words"
-                autoCorrect={false}
-                className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-gray-900"
-                placeholderTextColor="#9CA3AF"
+              <Controller
+                control={control}
+                name="fullName"
+                render={({ field: { onChange, value } }) => (
+                  <PrimaryInput
+                    value={value}
+                    onChangeText={onChange}
+                    placeholder="Enter your full name"
+                    autoCapitalize="words"
+                    autoCorrect={false}
+                    className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-gray-900"
+                    placeholderTextColor="#9CA3AF"
+                  />
+                )}
               />
+              {errors.fullName && (
+                <Text className="text-red-500 text-xs mt-1">{errors.fullName.message}</Text>
+              )}
             </View>
 
-            {/* Email Input */}
             <View>
               <Text className="text-gray-700 font-medium mb-2">
                 Email
               </Text>
-              <TextInput
-                value={email}
-                onChangeText={setEmail}
-                placeholder="Enter your email"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-gray-900"
-                placeholderTextColor="#9CA3AF"
+              <Controller
+                control={control}
+                name="email"
+                render={({ field: { onChange, value } }) => (
+                  <PrimaryInput
+                    value={value}
+                    onChangeText={onChange}
+                    placeholder="Enter your email"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-gray-900"
+                    placeholderTextColor="#9CA3AF"
+                  />
+                )}
               />
+              {errors.email && (
+                <Text className="text-red-500 text-xs mt-1">{errors.email.message}</Text>
+              )}
             </View>
 
-            {/* Password Input */}
             <View>
               <Text className="text-gray-700 font-medium mb-2">
                 Password
               </Text>
               <View className="relative">
-                <TextInput
-                  value={password}
-                  onChangeText={setPassword}
-                  placeholder="Create a password"
-                  secureTextEntry={!showPassword}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-gray-900 pr-12"
-                  placeholderTextColor="#9CA3AF"
+                <Controller
+                  control={control}
+                  name="password"
+                  render={({ field: { onChange, value } }) => (
+                    <PrimaryInput
+                      value={value}
+                      onChangeText={onChange}
+                      placeholder="Create a password"
+                      secureTextEntry={!showPassword}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-gray-900 pr-12"
+                      placeholderTextColor="#9CA3AF"
+                    />
+                  )}
                 />
                 <TouchableOpacity
                   onPress={() => setShowPassword(!showPassword)}
@@ -130,23 +148,31 @@ export default function SignUp() {
                   />
                 </TouchableOpacity>
               </View>
+              {errors.password && (
+                <Text className="text-red-500 text-xs mt-1">{errors.password.message}</Text>
+              )}
             </View>
 
-            {/* Confirm Password Input */}
             <View>
               <Text className="text-gray-700 font-medium mb-2">
                 Confirm Password
               </Text>
               <View className="relative">
-                <TextInput
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  placeholder="Confirm your password"
-                  secureTextEntry={!showConfirmPassword}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-gray-900 pr-12"
-                  placeholderTextColor="#9CA3AF"
+                <Controller
+                  control={control}
+                  name="confirmPassword"
+                  render={({ field: { onChange, value } }) => (
+                    <PrimaryInput
+                      value={value}
+                      onChangeText={onChange}
+                      placeholder="Confirm your password"
+                      secureTextEntry={!showConfirmPassword}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-gray-900 pr-12"
+                      placeholderTextColor="#9CA3AF"
+                    />
+                  )}
                 />
                 <TouchableOpacity
                   onPress={() => setShowConfirmPassword(!showConfirmPassword)}
@@ -159,31 +185,18 @@ export default function SignUp() {
                   />
                 </TouchableOpacity>
               </View>
+              {errors.confirmPassword && (
+                <Text className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</Text>
+              )}
             </View>
 
-            {/* Sign Up Button */}
-            <TouchableOpacity
-              onPress={handleSignUp}
+            <PrimaryButton
+              onPress={handleSubmit(onSubmit)}
               disabled={isLoading}
-              className={`bg-purple-600 rounded-xl py-4 items-center mt-6 ${
-                isLoading ? 'opacity-70' : ''
-              }`}
-            >
-              {isLoading ? (
-                <View className="flex-row items-center">
-                  <View className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                  <Text className="text-white font-semibold">
-                    Creating account...
-                  </Text>
-                </View>
-              ) : (
-                <Text className="text-white font-semibold text-lg">
-                  Create Account
-                </Text>
-              )}
-            </TouchableOpacity>
+              className="mt-6"
+              title={isLoading ? 'Signing up…' : 'Sign Up'}
+            />
 
-            {/* Sign In Link */}
             <View className="flex-row justify-center mt-8">
               <Text className="text-gray-500">Already have an account? </Text>
               <Link href="/auth/signin" asChild>
@@ -196,7 +209,6 @@ export default function SignUp() {
             </View>
           </View>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
   );
 } 

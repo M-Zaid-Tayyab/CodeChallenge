@@ -43,9 +43,10 @@ export default function SignIn() {
   return (
     <KeyboardAwareScrollView
     className='flex-1 bg-white'
+    contentContainerClassName='pt-safe'
     showsVerticalScrollIndicator={false}
     >
-        <View className="flex-1 px-8 pt-20 pb-8">
+        <View className="flex-1 px-8 pb-8">
           <View className="items-center mb-16">
             <View className="w-16 h-16 bg-purple-600 rounded-2xl items-center justify-center mb-6">
               <Ionicons name="journal" size={32} color="white" />
@@ -80,11 +81,11 @@ export default function SignIn() {
                 )}
               />
               {errors.email && (
-                <Text className="text-red-500 text-xs mt-1">{errors.email.message}</Text>
+                <Text className="text-red-500 text-sm mt-1">{errors.email.message}</Text>
               )}
             </View>
 
-            <View>
+            <View className='mt-4'>
               <Text className="text-gray-700 font-medium mb-2">
                 Password
               </Text>
@@ -117,11 +118,11 @@ export default function SignIn() {
                 </TouchableOpacity>
               </View>
               {errors.password && (
-                <Text className="text-red-500 text-xs mt-1">{errors.password.message}</Text>
+                <Text className="text-red-500 text-sm mt-1">{errors.password.message}</Text>
               )}
             </View>
 
-            <TouchableOpacity className="items-end">
+            <TouchableOpacity className="items-end mt-3">
               <Text className="text-purple-600 font-medium">
                 Forgot password?
               </Text>
@@ -134,7 +135,7 @@ export default function SignIn() {
             />
             <View className="flex-row justify-center mt-8">
               <Text className="text-gray-500">Don&apos;t have an account? </Text>
-              <Link href="/auth/signup" asChild>
+              <Link href="/auth/signup" asChild replace>
                 <TouchableOpacity>
                   <Text className="text-purple-600 font-semibold">
                     Sign up

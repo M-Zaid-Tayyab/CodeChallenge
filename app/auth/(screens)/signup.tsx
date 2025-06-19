@@ -51,9 +51,10 @@ export default function SignUp() {
   return (
     <KeyboardAwareScrollView
     className='flex-1 bg-white'
+    contentContainerClassName='pt-safe'
     showsVerticalScrollIndicator={false}
     >
-        <View className="flex-1 px-8 pt-16 pb-8">
+        <View className="flex-1 px-8 pb-8">
           <View className="items-center mb-12">
             <View className="w-16 h-16 bg-purple-600 rounded-2xl items-center justify-center mb-6">
               <Ionicons name="journal" size={32} color="white" />
@@ -87,11 +88,11 @@ export default function SignUp() {
                 )}
               />
               {errors.fullName && (
-                <Text className="text-red-500 text-xs mt-1">{errors.fullName.message}</Text>
+                <Text className="text-red-500 text-sm mt-1">{errors.fullName.message}</Text>
               )}
             </View>
 
-            <View>
+            <View className='mt-4'>
               <Text className="text-gray-700 font-medium mb-2">
                 Email
               </Text>
@@ -112,11 +113,11 @@ export default function SignUp() {
                 )}
               />
               {errors.email && (
-                <Text className="text-red-500 text-xs mt-1">{errors.email.message}</Text>
+                <Text className="text-red-500 text-sm mt-1">{errors.email.message}</Text>
               )}
             </View>
 
-            <View>
+            <View className='mt-4'>
               <Text className="text-gray-700 font-medium mb-2">
                 Password
               </Text>
@@ -149,11 +150,11 @@ export default function SignUp() {
                 </TouchableOpacity>
               </View>
               {errors.password && (
-                <Text className="text-red-500 text-xs mt-1">{errors.password.message}</Text>
+                <Text className="text-red-500 text-sm mt-1">{errors.password.message}</Text>
               )}
             </View>
 
-            <View>
+            <View className='mt-4'>
               <Text className="text-gray-700 font-medium mb-2">
                 Confirm Password
               </Text>
@@ -186,7 +187,7 @@ export default function SignUp() {
                 </TouchableOpacity>
               </View>
               {errors.confirmPassword && (
-                <Text className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</Text>
+                <Text className="text-red-500 text-sm mt-1">{errors.confirmPassword.message}</Text>
               )}
             </View>
 
@@ -199,7 +200,7 @@ export default function SignUp() {
 
             <View className="flex-row justify-center mt-8">
               <Text className="text-gray-500">Already have an account? </Text>
-              <Link href="/auth/signin" asChild>
+              <Link href="/auth/signin" asChild replace>
                 <TouchableOpacity>
                   <Text className="text-purple-600 font-semibold">
                     Sign in

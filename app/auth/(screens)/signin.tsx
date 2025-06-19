@@ -2,7 +2,7 @@ import PrimaryButton from '@/components/PrimaryButton';
 import PrimaryInput from '@/components/PrimaryInput';
 import { Ionicons } from '@expo/vector-icons';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
@@ -37,6 +37,7 @@ export default function SignIn() {
     setTimeout(() => {
       setIsLoading(false);
       Alert.alert('Success', 'Signed in!');
+      router.replace('/journal/list');
     }, 1000);
   };
 

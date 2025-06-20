@@ -164,7 +164,7 @@ export default function JournalListScreen() {
 
   return (
     <View className="flex-1 bg-white pb-4 pb-safe">
-      <Header title="Journal Entries" className="px-5" />
+      <Header title="Journal Entries" className="px-5" justTitle />
 
       <View className="flex-row space-x-3 mt-6 px-6">
         <TouchableOpacity

@@ -27,7 +27,7 @@ const Header: React.FC<HeaderProps> = ({
   style,
   titleClassName = "",
   titleStyle,
-  justTitle = false,
+  justTitle,
   ...props
 }) => {
   return (
@@ -39,7 +39,7 @@ const Header: React.FC<HeaderProps> = ({
       style={style}
       {...props}
     >
-      {justTitle && (
+      {!justTitle && (
         <TouchableOpacity onPress={onBack ? onBack : () => router.back()}>
           <Ionicons name="chevron-back" size={26} color="black" />
         </TouchableOpacity>

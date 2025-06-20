@@ -71,7 +71,7 @@ export default function CreateJournalEntryScreen() {
       contentContainerClassName="pb-safe"
       showsVerticalScrollIndicator={false}
     >
-      <Header justTitle title="New Entry" className="px-5" />
+      <Header title="New Entry" className="px-5" />
       <View className="flex-1 pb-4">
         <View className="items-center mt-6">
           <View className="bg-purple-100 rounded-full p-4 mb-2">

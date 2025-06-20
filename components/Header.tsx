@@ -1,8 +1,14 @@
-import { Ionicons } from '@expo/vector-icons';
-import clsx from 'clsx';
-import { router } from 'expo-router';
-import React from 'react';
-import { Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { Ionicons } from "@expo/vector-icons";
+import clsx from "clsx";
+import { router } from "expo-router";
+import React from "react";
+import {
+  Text,
+  TextStyle,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native";
 
 export interface HeaderProps {
   title: string;
@@ -11,30 +17,39 @@ export interface HeaderProps {
   style?: ViewStyle;
   titleClassName?: string;
   titleStyle?: TextStyle;
+  justTitle?: boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({
   title,
   onBack,
-  className = '',
+  className = "",
   style,
-  titleClassName = '',
+  titleClassName = "",
   titleStyle,
+  justTitle = false,
   ...props
 }) => {
   return (
     <View
-      className={clsx('flex-row items-center bg-white border-b border-gray-100 pt-safe', className)}
+      className={clsx(
+        "flex-row items-center bg-white border-b border-gray-100 pt-safe",
+        className
+      )}
       style={style}
       {...props}
     >
-      <TouchableOpacity
-        onPress={onBack ? onBack : () => router.back()}
-      >
-        <Ionicons name="chevron-back" size={26} color="black" />
-      </TouchableOpacity>
+      {justTitle && (
+        <TouchableOpacity onPress={onBack ? onBack : () => router.back()}>
+          <Ionicons name="chevron-back" size={26} color="black" />
+        </TouchableOpacity>
+      )}
       <View className="flex-1 items-center">
-        <Text className={clsx('text-2xl font-bold text-gray-900', titleClassName)} style={titleStyle} numberOfLines={1}>
+        <Text
+          className={clsx("text-2xl font-bold text-gray-900", titleClassName)}
+          style={titleStyle}
+          numberOfLines={1}
+        >
           {title}
         </Text>
       </View>

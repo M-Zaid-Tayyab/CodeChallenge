@@ -1,86 +1,48 @@
+import { FormInput, PasswordInput } from "@/app/auth/_components";
+import {
+  useAuth,
+  useMultiplePasswordVisibility,
+  useProfile,
+  useSignUpForm,
+} from "@/app/auth/_hooks";
 import PrimaryButton from "@/components/PrimaryButton";
-import PrimaryInput from "@/components/PrimaryInput";
-import { supabase } from "@/lib/supabase";
 import { Ionicons } from "@expo/vector-icons";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { Link } from "expo-router";
-import React, { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import Toast from "react-native-toast-message";
-import * as yup from "yup";
 
 export default function SignUp() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const schema = yup.object().shape({
-    fullName: yup.string().required("Full name is required"),
-    email: yup.string().email("Invalid email").required("Email is required"),
-    password: yup
-      .string()
-      .min(6, "Password must be at least 6 characters")
-      .required("Password is required"),
-    confirmPassword: yup
-      .string()
-      .oneOf([yup.ref("password")], "Passwords do not match")
-      .required("Confirm password is required"),
-  });
-
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
-    defaultValues: {
-      fullName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    },
-  });
+  } = useSignUpForm();
+  const { passwordVisibility, togglePasswordVisibility } =
+    useMultiplePasswordVisibility(2);
+  const { isLoading: authLoading, signUp } = useAuth();
+  const { createProfile } = useProfile();
 
   const onSubmit = async (data: any) => {
-    try {
-      setIsLoading(true);
-      const { data: signUpData, error: signUpError } =
-        await supabase.auth.signUp({
-          email: data.email,
-          password: data.password,
-        });
-      if (signUpError) {
-        Toast.show({
-          type: "error",
-          text1: signUpError.message,
-        });
-        return;
-      }
-      const user = signUpData?.user;
-      if (!user) {
-        return;
-      }
-      const { error: profileError, data: profileData } = await supabase
-        .from("profiles")
-        .insert({
-          id: user?.id,
-          name: data.fullName,
-        });
-      if (!signUpData?.session) {
+    const signUpResult = await signUp(data.email, data.password);
+
+    if (signUpResult.success && signUpResult.data?.user) {
+      const user = signUpResult.data.user;
+      const profileResult = await createProfile(user.id, data.fullName);
+      if (!signUpResult.data?.session) {
         Toast.show({
           type: "success",
           text1: "Check your email to confirm sign-up!",
         });
         return;
       }
-    } catch (error) {
-      console.log({ error });
-    } finally {
-      setIsLoading(false);
+      if (profileResult.success) {
+        console.log("Sign up and profile creation successful");
+      }
     }
   };
+
   return (
     <KeyboardAwareScrollView
       className="flex-1 bg-white"
@@ -100,137 +62,51 @@ export default function SignUp() {
           </Text>
         </View>
 
-        <View className="space-y-5">
-          <View>
-            <Text className="text-gray-700 font-medium mb-2">Full Name</Text>
-            <Controller
-              control={control}
-              name="fullName"
-              render={({ field: { onChange, value } }) => (
-                <PrimaryInput
-                  value={value}
-                  onChangeText={onChange}
-                  placeholder="Enter your full name"
-                  autoCapitalize="words"
-                  autoCorrect={false}
-                  className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-gray-900"
-                  placeholderTextColor="#9CA3AF"
-                />
-              )}
-            />
-            {errors.fullName && (
-              <Text className="text-red-500 text-sm mt-1">
-                {errors.fullName.message}
-              </Text>
-            )}
-          </View>
+        <View className="">
+          <FormInput
+            control={control}
+            name="fullName"
+            label="Full Name"
+            placeholder="Enter your full name"
+            autoCapitalize="words"
+            error={errors.fullName}
+          />
 
-          <View className="mt-4">
-            <Text className="text-gray-700 font-medium mb-2">Email</Text>
-            <Controller
-              control={control}
-              name="email"
-              render={({ field: { onChange, value } }) => (
-                <PrimaryInput
-                  value={value}
-                  onChangeText={onChange}
-                  placeholder="Enter your email"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-gray-900"
-                  placeholderTextColor="#9CA3AF"
-                />
-              )}
-            />
-            {errors.email && (
-              <Text className="text-red-500 text-sm mt-1">
-                {errors.email.message}
-              </Text>
-            )}
-          </View>
+          <FormInput
+            control={control}
+            name="email"
+            className="mt-4"
+            label="Email"
+            placeholder="Enter your email"
+            keyboardType="email-address"
+            error={errors.email}
+          />
 
-          <View className="mt-4">
-            <Text className="text-gray-700 font-medium mb-2">Password</Text>
-            <View className="relative">
-              <Controller
-                control={control}
-                name="password"
-                render={({ field: { onChange, value } }) => (
-                  <PrimaryInput
-                    value={value}
-                    onChangeText={onChange}
-                    placeholder="Create a password"
-                    secureTextEntry={!showPassword}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-gray-900 pr-12"
-                    placeholderTextColor="#9CA3AF"
-                  />
-                )}
-              />
-              <TouchableOpacity
-                onPress={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-4"
-              >
-                <Ionicons
-                  name={showPassword ? "eye-off" : "eye"}
-                  size={20}
-                  color="#9CA3AF"
-                />
-              </TouchableOpacity>
-            </View>
-            {errors.password && (
-              <Text className="text-red-500 text-sm mt-1">
-                {errors.password.message}
-              </Text>
-            )}
-          </View>
+          <PasswordInput
+            control={control}
+            name="password"
+            label="Password"
+            placeholder="Create a password"
+            error={errors.password}
+            showPassword={passwordVisibility[0]}
+            onTogglePassword={() => togglePasswordVisibility(0)}
+          />
 
-          <View className="mt-4">
-            <Text className="text-gray-700 font-medium mb-2">
-              Confirm Password
-            </Text>
-            <View className="relative">
-              <Controller
-                control={control}
-                name="confirmPassword"
-                render={({ field: { onChange, value } }) => (
-                  <PrimaryInput
-                    value={value}
-                    onChangeText={onChange}
-                    placeholder="Confirm your password"
-                    secureTextEntry={!showConfirmPassword}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-gray-900 pr-12"
-                    placeholderTextColor="#9CA3AF"
-                  />
-                )}
-              />
-              <TouchableOpacity
-                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-4 top-4"
-              >
-                <Ionicons
-                  name={showConfirmPassword ? "eye-off" : "eye"}
-                  size={20}
-                  color="#9CA3AF"
-                />
-              </TouchableOpacity>
-            </View>
-            {errors.confirmPassword && (
-              <Text className="text-red-500 text-sm mt-1">
-                {errors.confirmPassword.message}
-              </Text>
-            )}
-          </View>
+          <PasswordInput
+            control={control}
+            name="confirmPassword"
+            label="Confirm Password"
+            placeholder="Confirm your password"
+            error={errors.confirmPassword}
+            showPassword={passwordVisibility[1]}
+            onTogglePassword={() => togglePasswordVisibility(1)}
+          />
 
           <PrimaryButton
             onPress={handleSubmit(onSubmit)}
-            disabled={isLoading}
+            disabled={authLoading}
             className="mt-6"
-            title={isLoading ? "Signing up…" : "Sign Up"}
+            title={authLoading ? "Signing up…" : "Sign Up"}
           />
 
           <View className="flex-row justify-center mt-8">

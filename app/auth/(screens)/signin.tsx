@@ -1,62 +1,31 @@
+import { FormInput, PasswordInput } from "@/app/auth/_components";
+import {
+  useAuth,
+  usePasswordVisibility,
+  useSignInForm,
+} from "@/app/auth/_hooks";
 import PrimaryButton from "@/components/PrimaryButton";
-import PrimaryInput from "@/components/PrimaryInput";
-import { supabase } from "@/lib/supabase";
+import { storage } from "@/storage";
 import { Ionicons } from "@expo/vector-icons";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Link } from "expo-router";
-import React, { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Link, router } from "expo-router";
+import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import Toast from "react-native-toast-message";
-import * as yup from "yup";
 
 export default function SignIn() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const schema = yup.object().shape({
-    email: yup.string().email("Invalid email").required("Email is required"),
-    password: yup.string().required("Password is required"),
-  });
-
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
+  } = useSignInForm();
+  const { showPassword, togglePasswordVisibility } = usePasswordVisibility();
+  const { isLoading, signIn } = useAuth();
 
   const onSubmit = async (data: any) => {
-    try {
-      setIsLoading(true);
-      const { data: signInData, error: signInError } =
-        await supabase.auth.signInWithPassword({
-          email: data.email,
-          password: data.password,
-        });
-      if (signInError) {
-        Toast.show({
-          type: "error",
-          text1: signInError.message,
-        });
-      } else {
-        const userId = signInData.user?.id;
-        const { data: profileData, error: profileError } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", userId)
-          .single();
-      }
-    } catch (error) {
-      console.log({ error });
-    } finally {
-      setIsLoading(false);
+    const result = await signIn(data.email, data.password);
+    if (result.success) {
+      storage.set("user", JSON.stringify(result?.data?.session));
+      router.replace("/journal/list");
     }
   };
 
@@ -80,79 +49,38 @@ export default function SignIn() {
         </View>
 
         <View className="space-y-6">
-          <View>
-            <Text className="text-gray-700 font-medium mb-2">Email</Text>
-            <Controller
-              control={control}
-              name="email"
-              render={({ field: { onChange, value } }) => (
-                <PrimaryInput
-                  value={value}
-                  onChangeText={onChange}
-                  placeholder="Enter your email"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-gray-900"
-                  placeholderTextColor="#9CA3AF"
-                />
-              )}
-            />
-            {errors.email && (
-              <Text className="text-red-500 text-sm mt-1">
-                {errors.email.message}
-              </Text>
-            )}
-          </View>
+          <FormInput
+            control={control}
+            name="email"
+            label="Email"
+            placeholder="Enter your email"
+            keyboardType="email-address"
+            error={errors.email}
+          />
 
-          <View className="mt-4">
-            <Text className="text-gray-700 font-medium mb-2">Password</Text>
-            <View className="relative">
-              <Controller
-                control={control}
-                name="password"
-                render={({ field: { onChange, value } }) => (
-                  <PrimaryInput
-                    value={value}
-                    onChangeText={onChange}
-                    placeholder="Enter your password"
-                    secureTextEntry={!showPassword}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-gray-900 pr-12"
-                    placeholderTextColor="#9CA3AF"
-                  />
-                )}
-              />
-              <TouchableOpacity
-                onPress={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-4"
-              >
-                <Ionicons
-                  name={showPassword ? "eye-off" : "eye"}
-                  size={20}
-                  color="#9CA3AF"
-                />
-              </TouchableOpacity>
-            </View>
-            {errors.password && (
-              <Text className="text-red-500 text-sm mt-1">
-                {errors.password.message}
-              </Text>
-            )}
-          </View>
+          <PasswordInput
+            control={control}
+            name="password"
+            label="Password"
+            placeholder="Enter your password"
+            error={errors.password}
+            showPassword={showPassword}
+            onTogglePassword={togglePasswordVisibility}
+          />
 
           <TouchableOpacity className="items-end mt-3">
             <Text className="text-purple-600 font-medium">
               Forgot password?
             </Text>
           </TouchableOpacity>
+
           <PrimaryButton
             onPress={handleSubmit(onSubmit)}
             disabled={isLoading}
             className="mt-6"
             title={isLoading ? "Signing in…" : "Sign In"}
           />
+
           <View className="flex-row justify-center mt-8">
             <Text className="text-gray-500">Don&apos;t have an account? </Text>
             <Link href="/auth/signup" asChild replace>

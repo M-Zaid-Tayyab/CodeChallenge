@@ -1,6 +1,8 @@
-import { Redirect } from 'expo-router';
-import '../global.css';
+import { storage } from "@/storage";
+import { Redirect } from "expo-router";
+import "../global.css";
 
 export default function Index() {
-  return <Redirect href="/auth/signup" />;
+  const user = JSON.parse(storage.getString("user") || "{}");
+  return <Redirect href="/auth/signin" />;
 }

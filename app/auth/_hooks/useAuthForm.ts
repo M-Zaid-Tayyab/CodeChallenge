@@ -32,6 +32,10 @@ export const signUpSchema = yup.object().shape({
     .required("Confirm password is required"),
 });
 
+export const forgotPasswordSchema = yup.object().shape({
+  email: yup.string().email("Invalid email").required("Email is required"),
+});
+
 export const useSignInForm = () => {
   return useForm<SignInFormData>({
     resolver: yupResolver(signInSchema),
@@ -50,6 +54,15 @@ export const useSignUpForm = () => {
       email: "",
       password: "",
       confirmPassword: "",
+    },
+  });
+};
+
+export const useForgotPasswordForm = () => {
+  return useForm<{ email: string }>({
+    resolver: yupResolver(forgotPasswordSchema),
+    defaultValues: {
+      email: "",
     },
   });
 };

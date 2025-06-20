@@ -80,10 +80,39 @@ export const useAuth = () => {
     }
   };
 
+  const resetPassword = async (email: string) => {
+    try {
+      setIsLoading(true);
+      const { error } = await supabase.auth.resetPasswordForEmail(email);
+      if (error) {
+        Toast.show({
+          type: "error",
+          text1: error.message,
+        });
+        return { success: false, error };
+      }
+      Toast.show({
+        type: "success",
+        text1: "Password reset email sent!",
+      });
+      return { success: true };
+    } catch (error) {
+      console.log({ error });
+      Toast.show({
+        type: "error",
+        text1: "An unexpected error occurred",
+      });
+      return { success: false, error };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     isLoading,
     signIn,
     signUp,
     signOut,
+    resetPassword,
   };
 };

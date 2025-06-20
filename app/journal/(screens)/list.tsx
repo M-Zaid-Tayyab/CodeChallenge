@@ -11,7 +11,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import PrimaryButton from "../../../components/PrimaryButton";
 
 const moodTypes: (keyof Mood)[] = ["happiness", "fear", "sadness", "anger"];
 
@@ -47,16 +46,16 @@ export default function JournalListScreen() {
         activeOpacity={0.85}
       >
         <View className="mt-1">
-          <Ionicons name="document-text-outline" size={28} color="#8B5CF6" />
+          <Ionicons name="document-text-outline" size={30} color="#8B5CF6" />
         </View>
         <View className="flex-1">
           <Text
-            className="text-base text-gray-900 mb-1 font-semibold"
+            className="text-lg text-gray-900 mb-1 font-semibold"
             numberOfLines={3}
           >
             {item.text}
           </Text>
-          <View className="mt-2">
+          <View className="mt-1">
             <View className="flex-row flex-wrap gap-1 mb-2">
               {Object.entries(item.mood).map(([emotion, score]) => {
                 if (score > 0) {
@@ -85,18 +84,18 @@ export default function JournalListScreen() {
               })}
             </View>
             {item.mood_confidence && (
-              <Text className="text-xs text-gray-400">
+              <Text className="text-xs text-gray-500">
                 Confidence: {Math.round(item.mood_confidence * 100)}%
               </Text>
             )}
             {item.mood_keywords && item.mood_keywords.length > 0 && (
-              <Text className="text-xs text-gray-400 mt-1" numberOfLines={1}>
+              <Text className="text-xs text-gray-500 mt-1" numberOfLines={1}>
                 Keywords: {item.mood_keywords.slice(0, 3).join(", ")}
                 {item.mood_keywords.length > 3 && "..."}
               </Text>
             )}
           </View>
-          <Text className="text-xs text-gray-300 mt-2">
+          <Text className="text-xs text-gray-400 mt-2">
             {new Date(item.created_at).toLocaleDateString()}
           </Text>
         </View>
@@ -116,7 +115,8 @@ export default function JournalListScreen() {
     >
       <Text
         className={
-          filters.mood === item ? "text-white font-semibold" : "text-gray-700"
+          "text-xl" +
+          (filters.mood === item ? "text-white font-semibold" : "text-gray-700")
         }
       >
         {item.charAt(0).toUpperCase() + item.slice(1)}
@@ -159,12 +159,6 @@ export default function JournalListScreen() {
         <Text className="text-gray-400 text-center mt-2 mb-4">
           Start writing to see your entries here.
         </Text>
-        <PrimaryButton
-          title="Create your first entry"
-          onPress={() => router.push("/journal/create")}
-          className="mt-2 px-8 py-3 rounded-full bg-purple-600"
-          textClassName="text-white font-bold text-base"
-        />
       </View>
     );
   }, [isLoading, error, filters.mood]);

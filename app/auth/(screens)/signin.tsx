@@ -68,13 +68,13 @@ export default function SignIn() {
             onTogglePassword={togglePasswordVisibility}
           />
 
-          <Link href="./forgot-password" asChild replace>
+          {/* <Link href="./forgot-password" asChild replace>
             <TouchableOpacity className="items-end mt-3">
               <Text className="text-purple-600 font-medium">
                 Forgot password?
               </Text>
             </TouchableOpacity>
-          </Link>
+          </Link> */}
 
           <PrimaryButton
             onPress={handleSubmit(onSubmit)}

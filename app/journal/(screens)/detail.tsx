@@ -1,5 +1,6 @@
 import { useJournalEntries } from "@/app/journal/_hooks";
 import { JournalEntry } from "@/app/journal/_types";
+import LoadingModal from "@/components/LoadingModal";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -173,6 +174,7 @@ export default function JournalDetailScreen() {
           </View>
         </View>
       </View>
+      <LoadingModal visible={isLoading} />
     </View>
   );
 }

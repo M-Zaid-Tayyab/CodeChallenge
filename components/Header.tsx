@@ -33,7 +33,7 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <View
       className={clsx(
-        "flex-row items-center bg-white border-b border-gray-100 pt-safe",
+        "flex-row items-center bg-white border-b pb-4 border-gray-100 pt-safe",
         className
       )}
       style={style}

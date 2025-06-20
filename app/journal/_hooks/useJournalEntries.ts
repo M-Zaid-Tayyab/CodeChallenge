@@ -195,7 +195,7 @@ export const useJournalEntries = () => {
   useFocusEffect(
     useCallback(() => {
       fetchEntries();
-    }, [fetchEntries])
+    }, [])
   );
 
   return {

@@ -21,7 +21,7 @@ export const useMoodAnalysis = () => {
       return null;
     }
 
-    if (!user?.id) {
+    if (!user?.user?.id) {
       Toast.show({
         type: "error",
         text1: "Error",

@@ -139,7 +139,7 @@ export default function CreateJournalEntryScreen() {
                   return (
                     <View
                       key={emotion}
-                      className="flex-row items-center bg-white px-3 py-1 rounded-full shadow-sm border border-gray-100"
+                      className="flex-row items-center bg-white px-3 py-1 rounded-full shadow-sm"
                     >
                       <MaterialCommunityIcons
                         name={iconMap[emotion] || "emoticon-neutral-outline"}
@@ -152,7 +152,7 @@ export default function CreateJournalEntryScreen() {
                         className="text-sm font-medium"
                       >
                         {emotion.charAt(0).toUpperCase() + emotion.slice(1)}:{" "}
-                        {Math.round(score * 100)}%
+                        {Math.round(score * 10)}%
                       </Text>
                     </View>
                   );

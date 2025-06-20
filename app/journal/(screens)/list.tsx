@@ -28,12 +28,13 @@ export default function JournalListScreen() {
 
   const filteredEntries = useMemo(() => {
     if (!filters.mood) return entries;
-    return entries.filter(
-      (entry) =>
+    return entries.filter((entry) => {
+      return (
         entry.mood &&
         entry.mood[filters.mood?.toLowerCase() as keyof Mood] &&
-        (entry.mood[filters.mood?.toLowerCase() as keyof Mood] || 0) > 5
-    );
+        (entry.mood[filters.mood?.toLowerCase() as keyof Mood] || 0) >= 1
+      );
+    });
   }, [entries, filters.mood]);
 
   const renderItem = useCallback(

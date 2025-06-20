@@ -1,6 +1,6 @@
 import { useJournalEntries } from "@/app/journal/_hooks";
 import { JournalEntry } from "@/app/journal/_types";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
@@ -65,31 +65,45 @@ export default function JournalDetailScreen() {
     <View className="flex-1 bg-white">
       <Header title="Entry Details" className="px-5" />
       <View className="flex-1 px-6 pb-4">
-        <View className="items-center mt-6 mb-4">
-          <View className="bg-purple-100 rounded-full p-4 mb-2">
-            <Ionicons name="book-outline" size={32} color="#a78bfa" />
+        <View className="items-center mt-8 mb-2">
+          <View className="bg-purple-100 rounded-full p-6 mb-3">
+            <Ionicons name="book-outline" size={48} color="#a78bfa" />
           </View>
-          <Text className="text-gray-500 text-base">
-            Here&apos;s what you wrote:
+          <Text className="text-gray-700 text-xl font-bold mb-1">
+            Your Journal Entry
+          </Text>
+          <Text className="text-gray-400 text-base text-center max-w-xs">
+            Reflect, express, and grow.
           </Text>
         </View>
 
-        <View className="bg-gray-50 rounded-xl p-5 mb-6 border border-gray-100 shadow-sm">
-          <View className="flex-row justify-between">
-            <Text className="text-lg font-medium text-gray-900 mb-4 leading-6 flex-1">
+        <View className="bg-gray-50 rounded-2xl p-6 mb-8 border border-gray-100 shadow-md mt-4">
+          <View className="flex-row justify-between items-start mb-2">
+            <Text className="text-xl font-semibold text-gray-900 leading-7 flex-1">
               {entry.text}
             </Text>
-            <TouchableOpacity onPress={handleDelete}>
-              <Ionicons name="trash-outline" size={20} color="red" />
+            <TouchableOpacity
+              onPress={handleDelete}
+              className="ml-3 p-2 bg-red-50 rounded-full"
+            >
+              <Ionicons name="trash-outline" size={22} color="#ef4444" />
             </TouchableOpacity>
           </View>
-          <View className="border-t border-gray-200 pt-4">
-            <Text className="text-gray-700 font-semibold mb-3">
-              Mood Analysis
-            </Text>
+          <Text className="text-xs text-gray-400 mb-4">
+            {new Date(entry.created_at).toLocaleString()}
+          </Text>
+          <View className="border-t border-gray-200 pt-5">
             <View className="flex-row flex-wrap gap-2 mb-3">
               {Object.entries(entry.mood).map(([emotion, score]) => {
                 if (score > 0) {
+                  const iconMap: Record<string, any> = {
+                    happiness: "emoticon-happy-outline",
+                    sadness: "emoticon-sad-outline",
+                    anger: "emoticon-angry-outline",
+                    fear: "emoticon-neutral-outline",
+                    surprise: "emoticon-excited-outline",
+                    disgust: "emoticon-poop-outline",
+                  };
                   const colors = {
                     happiness: "bg-green-200 text-green-800",
                     sadness: "bg-blue-200 text-blue-800",
@@ -98,32 +112,37 @@ export default function JournalDetailScreen() {
                     surprise: "bg-yellow-200 text-yellow-800",
                     disgust: "bg-gray-200 text-gray-800",
                   };
-
                   return (
-                    <Text
+                    <View
                       key={emotion}
-                      className={`${
+                      className={`flex-row items-center px-3 py-1 rounded-full shadow-sm ${
                         colors[emotion as keyof typeof colors] ||
                         "bg-gray-200 text-gray-800"
-                      } px-3 py-1 rounded-full text-sm font-medium`}
+                      }`}
                     >
-                      {emotion.charAt(0).toUpperCase() + emotion.slice(1)}:{" "}
-                      {Math.round(score * 100)}%
-                    </Text>
+                      <MaterialCommunityIcons
+                        name={iconMap[emotion] || "emoticon-neutral-outline"}
+                        size={16}
+                        color="#8B5CF6"
+                        style={{ marginRight: 4 }}
+                      />
+                      <Text className="text-sm font-medium">
+                        {emotion.charAt(0).toUpperCase() + emotion.slice(1)}:{" "}
+                        {Math.round(score * 10)}%
+                      </Text>
+                    </View>
                   );
                 }
                 return null;
               })}
             </View>
-
             {entry.mood_confidence && (
               <View className="mb-3">
-                <Text className="text-gray-700 text-sm font-medium">
+                <Text className="text-purple-700 text-sm font-medium">
                   Confidence: {Math.round(entry.mood_confidence * 100)}%
                 </Text>
               </View>
             )}
-
             {entry.mood_summary && (
               <View className="mb-3">
                 <Text className="text-gray-700 text-sm font-medium mb-1">
@@ -134,15 +153,21 @@ export default function JournalDetailScreen() {
                 </Text>
               </View>
             )}
-
             {entry.mood_keywords && entry.mood_keywords.length > 0 && (
-              <View className="mb-3">
+              <View className="mb-3 flex-row flex-wrap gap-2">
                 <Text className="text-gray-700 text-sm font-medium mb-1">
                   Keywords:
                 </Text>
-                <Text className="text-gray-600 text-sm">
-                  {entry.mood_keywords.join(", ")}
-                </Text>
+                {entry.mood_keywords.map((kw) => (
+                  <View
+                    key={kw}
+                    className="bg-purple-100 px-3 py-1 rounded-full"
+                  >
+                    <Text className="text-purple-700 text-xs font-semibold">
+                      {kw}
+                    </Text>
+                  </View>
+                ))}
               </View>
             )}
           </View>

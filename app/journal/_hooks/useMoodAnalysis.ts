@@ -1,13 +1,13 @@
+import { storage } from "@/storage";
 import { useState } from "react";
 import Toast from "react-native-toast-message";
 import { moodAnalysisService } from "../_services";
 import { MoodAnalysisResult } from "../_types";
-import { useCurrentUser } from "./useCurrentUser";
 
 export const useMoodAnalysis = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useCurrentUser();
+  const user = JSON.parse(storage.getString("user") || "{}");
 
   const analyzeText = async (
     text: string
@@ -58,12 +58,12 @@ export const useMoodAnalysis = () => {
 
   const getEmotionColor = (emotion: string): string => {
     const colors: Record<string, string> = {
-      happiness: "#10B981", // green
-      sadness: "#60A5FA", // blue
-      anger: "#EF4444", // red
-      fear: "#8B5CF6", // purple
-      surprise: "#F59E0B", // yellow
-      disgust: "#6B7280", // gray
+      happiness: "#10B981",
+      sadness: "#60A5FA", 
+      anger: "#EF4444", 
+      fear: "#8B5CF6", 
+      surprise: "#F59E0B", 
+      disgust: "#6B7280", 
     };
     return colors[emotion] || "#6B7280";
   };

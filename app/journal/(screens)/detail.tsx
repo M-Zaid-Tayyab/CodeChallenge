@@ -1,6 +1,5 @@
-import { useCurrentUser, useJournalEntries } from "@/app/journal/_hooks";
+import { useJournalEntries } from "@/app/journal/_hooks";
 import { JournalEntry } from "@/app/journal/_types";
-import { storage } from "@/storage";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -10,11 +9,7 @@ import Header from "../../../components/Header";
 
 export default function JournalDetailScreen() {
   const { id } = useLocalSearchParams();
-  const { user, isLoading: userLoading } = useCurrentUser();
-  const currentUser = JSON.parse(storage.getString("user") || "{}");
-  const { getEntry, deleteEntry, isLoading } = useJournalEntries(
-    currentUser?.user?.id || ""
-  );
+  const { getEntry, deleteEntry, isLoading } = useJournalEntries();
   const [entry, setEntry] = useState<JournalEntry | null>(null);
   const [isLoadingEntry, setIsLoadingEntry] = useState(true);
 
@@ -47,21 +42,11 @@ export default function JournalDetailScreen() {
     }
   };
 
-  if (userLoading || isLoadingEntry) {
+  if (isLoadingEntry) {
     return (
       <View className="flex-1 bg-white items-center justify-center">
         <ActivityIndicator size="large" color="#8B5CF6" />
         <Text className="text-gray-400 text-center mt-4">Loading...</Text>
-      </View>
-    );
-  }
-
-  if (!user) {
-    return (
-      <View className="flex-1 bg-white items-center justify-center">
-        <Text className="text-gray-400 text-center">
-          Please sign in to view journal entries.
-        </Text>
       </View>
     );
   }

@@ -1,7 +1,6 @@
-import { useCurrentUser, useJournalEntries } from "@/app/journal/_hooks";
+import { useJournalEntries } from "@/app/journal/_hooks";
 import { JournalEntry, Mood } from "@/app/journal/_types";
 import Header from "@/components/Header";
-import { storage } from "@/storage";
 import { router } from "expo-router";
 import React, { useCallback, useMemo } from "react";
 import {
@@ -16,8 +15,6 @@ import PrimaryButton from "../../../components/PrimaryButton";
 const moodTypes: (keyof Mood)[] = ["happiness", "fear", "sadness", "anger"];
 
 export default function JournalListScreen() {
-  const { user, isLoading: userLoading } = useCurrentUser();
-  const currentUser = JSON.parse(storage.getString("user") || "{}");
   const {
     entries,
     isLoading,
@@ -26,7 +23,7 @@ export default function JournalListScreen() {
     updateFilters,
     clearFilters,
     fetchEntries,
-  } = useJournalEntries(currentUser?.user?.id || "");
+  } = useJournalEntries();
 
   const filteredEntries = useMemo(() => {
     if (!filters.mood) return entries;
@@ -156,21 +153,11 @@ export default function JournalListScreen() {
     );
   }, [isLoading, error, filters.mood]);
 
-  if (userLoading) {
+  if (isLoading) {
     return (
       <View className="flex-1 bg-white items-center justify-center">
         <ActivityIndicator size="large" color="#8B5CF6" />
         <Text className="text-gray-400 text-center mt-4">Loading...</Text>
-      </View>
-    );
-  }
-
-  if (!user) {
-    return (
-      <View className="flex-1 bg-white items-center justify-center">
-        <Text className="text-gray-400 text-center">
-          Please sign in to view your journal entries.
-        </Text>
       </View>
     );
   }

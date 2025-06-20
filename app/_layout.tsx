@@ -16,15 +16,14 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (loading) return;
-
     const inAuthGroup = segments[0] === "auth";
-
     if (session && inAuthGroup) {
       router.replace("/journal/list");
     } else if (!session && !inAuthGroup) {
       router.replace("/auth/signin");
     }
   }, [session, loading, segments, router]);
+
   return (
     <SafeAreaProvider>
       <Slot />

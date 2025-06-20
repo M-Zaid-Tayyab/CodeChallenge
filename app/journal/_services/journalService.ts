@@ -1,10 +1,10 @@
 import { supabase } from "@/lib/supabase";
 import {
-    CreateJournalEntryData,
-    JournalEntry,
-    JournalEntryFilters,
-    Mood,
-    UpdateJournalEntryData,
+  CreateJournalEntryData,
+  JournalEntry,
+  JournalEntryFilters,
+  Mood,
+  UpdateJournalEntryData,
 } from "../_types";
 
 export class JournalService {
@@ -51,7 +51,6 @@ export class JournalService {
         .eq("user_id", userId)
         .order("created_at", { ascending: false });
 
-      // Apply filters
       if (filters?.search) {
         query = query.ilike("text", `%${filters.search}%`);
       }
@@ -69,7 +68,6 @@ export class JournalService {
         return { success: false, error };
       }
 
-      // Apply mood filter in memory if needed
       let filteredEntries = entries;
       if (filters?.mood) {
         filteredEntries = entries.filter(
@@ -173,7 +171,6 @@ export class JournalService {
         return { success: false, error };
       }
 
-      // Filter by mood in memory since Supabase doesn't support JSON field filtering easily
       const filteredEntries = entries.filter(
         (entry) =>
           entry.mood && entry.mood[moodType] && entry.mood[moodType] > 5

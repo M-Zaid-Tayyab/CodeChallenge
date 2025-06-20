@@ -1,25 +1,16 @@
-import {
-  useCurrentUser,
-  useJournalEntries,
-  useMoodAnalysis,
-} from "@/app/journal/_hooks";
+import { useJournalEntries, useMoodAnalysis } from "@/app/journal/_hooks";
 import { MoodAnalysisResult } from "@/app/journal/_types";
-import { storage } from "@/storage";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import Toast from "react-native-toast-message";
 import Header from "../../../components/Header";
 import PrimaryButton from "../../../components/PrimaryButton";
 import PrimaryInput from "../../../components/PrimaryInput";
 
 export default function CreateJournalEntryScreen() {
-  const { user, isLoading: userLoading } = useCurrentUser();
-  const currentUser = JSON.parse(storage.getString("user") || "{}");
-  const { createEntry, isLoading: isCreating } = useJournalEntries(
-    currentUser?.user?.id || ""
-  );
+  const { createEntry, isLoading: isCreating } = useJournalEntries();
   const {
     analyzeText,
     isAnalyzing,
@@ -73,25 +64,6 @@ export default function CreateJournalEntryScreen() {
       router.back();
     }
   };
-
-  if (userLoading) {
-    return (
-      <View className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator size="large" color="#8B5CF6" />
-        <Text className="text-gray-400 text-center mt-4">Loading...</Text>
-      </View>
-    );
-  }
-
-  if (!user) {
-    return (
-      <View className="flex-1 bg-white items-center justify-center">
-        <Text className="text-gray-400 text-center">
-          Please sign in to create journal entries.
-        </Text>
-      </View>
-    );
-  }
 
   return (
     <ScrollView

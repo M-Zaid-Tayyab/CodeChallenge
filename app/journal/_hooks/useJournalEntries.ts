@@ -1,3 +1,4 @@
+import { storage } from "@/storage";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import Toast from "react-native-toast-message";
@@ -9,7 +10,9 @@ import {
   UpdateJournalEntryData,
 } from "../_types";
 
-export const useJournalEntries = (userId: string) => {
+export const useJournalEntries = () => {
+  const user = JSON.parse(storage.getString("user") || "{}");
+  const userId = user?.user?.id;
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

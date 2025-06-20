@@ -9,9 +9,9 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "extra": {
-      "supabaseUrl": "https://uzdayugouizdnelrfoto.supabase.co",
-      "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6ZGF5dWdvdWl6ZG5lbHJmb3RvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAzNDQ3NzksImV4cCI6MjA2NTkyMDc3OX0.tpS25V1j08S77mUYssqFsE_JL_TBuIEDY47_VoNmB5k",
-      "openaiApiKey": "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"
+      "supabaseUrl": "",
+      "supabaseAnonKey": "",
+      "openaiApiKey": ""
     },
     "ios": {
       "supportsTablet": true,

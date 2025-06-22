@@ -8,11 +8,6 @@
     "scheme": "journalgpt",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "extra": {
-      "supabaseUrl": "",
-      "supabaseAnonKey": "",
-      "openaiApiKey": ""
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.expo-new-dev.JournalGPT"

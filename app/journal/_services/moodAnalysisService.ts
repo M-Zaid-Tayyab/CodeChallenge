@@ -1,10 +1,10 @@
-import Constants from "expo-constants";
 import OpenAI from "openai";
 import { supabase } from "../../../lib/supabase";
 import { MoodAnalysisResult } from "../_types";
 
 const openai = new OpenAI({
-  apiKey: Constants.expoConfig?.extra?.openaiApiKey,
+  apiKey: process.env.EXPO_PUBLIC_OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true,
 });
 
 export class MoodAnalysisService {
